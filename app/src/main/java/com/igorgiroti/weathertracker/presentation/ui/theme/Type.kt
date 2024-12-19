@@ -1,4 +1,4 @@
-package com.igorgiroti.weathertracker.ui.theme
+package com.igorgiroti.weathertracker.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

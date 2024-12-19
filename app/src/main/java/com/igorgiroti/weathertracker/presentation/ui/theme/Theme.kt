@@ -1,4 +1,4 @@
-package com.igorgiroti.weathertracker.ui.theme
+package com.igorgiroti.weathertracker.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
