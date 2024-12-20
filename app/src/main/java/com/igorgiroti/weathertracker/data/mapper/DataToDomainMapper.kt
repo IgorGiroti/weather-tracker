@@ -4,9 +4,11 @@ import com.igorgiroti.weathertracker.data.model.CurrentWeatherConditionResponse
 import com.igorgiroti.weathertracker.data.model.CurrentWeatherResponse
 import com.igorgiroti.weathertracker.data.model.LocationResponse
 import com.igorgiroti.weathertracker.data.model.WeatherApiResponse
+import com.igorgiroti.weathertracker.data.model.WeatherApiSearchResponse
 import com.igorgiroti.weathertracker.domain.model.CurrentWeather
 import com.igorgiroti.weathertracker.domain.model.CurrentWeatherCondition
 import com.igorgiroti.weathertracker.domain.model.Location
+import com.igorgiroti.weathertracker.domain.model.Search
 import com.igorgiroti.weathertracker.domain.model.Weather
 
 fun WeatherApiResponse.toDomain() = Weather(
@@ -30,3 +32,17 @@ fun CurrentWeatherConditionResponse.toDomain() = CurrentWeatherCondition(
     text = this.text,
     iconUrl = this.iconUrl
 )
+
+fun List<WeatherApiSearchResponse>.toDomain(): List<Search> {
+    val searchList = arrayListOf<Search>()
+    this.forEach { item ->
+        searchList.add(
+            Search(
+                name = item.name,
+                region = item.region,
+                country = item.country
+            )
+        )
+    }
+    return searchList
+}

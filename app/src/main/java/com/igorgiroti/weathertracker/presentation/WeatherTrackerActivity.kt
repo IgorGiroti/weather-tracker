@@ -31,6 +31,7 @@ class WeatherTrackerActivity : ComponentActivity() {
                     Button(
                         onClick = {
                             weatherViewModel.getWeather("London")
+                            weatherViewModel.getSearch("Lond")
                         }
                     ) {}
                 }
