@@ -2,8 +2,9 @@ package com.igorgiroti.weathertracker.presentation.ui.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.igorgiroti.weathertracker.domain.model.Search
 import com.igorgiroti.weathertracker.domain.model.Weather
 import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.EmptyScreenLayout
+import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.ErrorBottomSheet
 import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.LoadingScreenLayout
 import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.SearchBar
 import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.SearchResultLayout
@@ -28,6 +30,7 @@ import com.igorgiroti.weathertracker.presentation.ui.viewModel.WeatherApiViewMod
 import com.igorgiroti.weathertracker.utils.DELAY
 import com.igorgiroti.weathertracker.utils.EMPTY
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherTrackerScreen(
     viewModel: WeatherApiViewModel,
@@ -35,10 +38,12 @@ fun WeatherTrackerScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchState by viewModel.searchState.collectAsState()
+    val showError by viewModel.showErrorBottomSheet.collectAsState()
     val focusManager = LocalFocusManager.current
     var search by remember { mutableStateOf(EMPTY) }
     var isFocused by remember { mutableStateOf(false) }
     var lastSearch by remember { mutableStateOf(EMPTY) }
+    val sheetState = rememberModalBottomSheetState()
 
 
     LaunchedEffect(search) {
@@ -71,33 +76,33 @@ fun WeatherTrackerScreen(
         }
     ) { padding ->
 
+        if (showError) {
+            ErrorBottomSheet(
+                sheetState = sheetState,
+                onDismiss = {
+                    viewModel.dismissBottomSheet()
+                }
+            )
+        }
+
         Column(modifier = Modifier.padding(padding)) {
             when (uiState) {
                 is WeatherUiState.Loading -> {
                     LoadingScreenLayout()
                 }
 
-                is WeatherUiState.Success -> {
-                    val data = (uiState as WeatherUiState.Success<Weather?>).data
+                is WeatherUiState.Loaded -> {
+                    val data = (uiState as WeatherUiState.Loaded<Weather?>).data
 
                     data?.let {
                         SuccessScreenLayout(weatherModel = data)
                     } ?: EmptyScreenLayout()
-
-                }
-
-                is WeatherUiState.Error -> {
-                    Text("Error")
                 }
 
                 is WeatherUiState.Searching -> {
                     when (searchState) {
                         is SearchState.Loading -> {
                             LoadingScreenLayout()
-                        }
-
-                        is SearchState.Error -> {
-                            Text("Error")
                         }
 
                         is SearchState.Success -> {

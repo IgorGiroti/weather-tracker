@@ -21,12 +21,15 @@ class WeatherApiViewModel(
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<WeatherUiState<Weather?>> =
-        MutableStateFlow(WeatherUiState.Success(null))
+        MutableStateFlow(WeatherUiState.Loaded(null))
     val uiState = _uiState
 
     private val _searchState: MutableStateFlow<SearchState<List<Search>?>> =
         MutableStateFlow(SearchState.Initial)
     val searchState = _searchState
+
+    private val _showErrorBottomSheet: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showErrorBottomSheet = _showErrorBottomSheet
 
     private lateinit var previousSuccessUiState: WeatherUiState<Weather?>
 
@@ -40,13 +43,13 @@ class WeatherApiViewModel(
                     }
 
                     is ResponseStatus.Success -> {
-                        _uiState.update { WeatherUiState.Success(response.data) }
+                        _uiState.update { WeatherUiState.Loaded(response.data) }
                         _searchState.update { SearchState.Initial }
                         previousSuccessUiState = _uiState.value
                     }
 
                     is ResponseStatus.Error -> {
-                        _uiState.update { WeatherUiState.Error(response.error) }
+                        _showErrorBottomSheet.update { true }
                     }
                 }
             }
@@ -67,7 +70,9 @@ class WeatherApiViewModel(
                     }
 
                     is ResponseStatus.Error -> {
-                        _searchState.update { SearchState.Error(response.error) }
+                        _showErrorBottomSheet.update { true }
+                        _searchState.update { SearchState.Initial }
+                        _uiState.update { previousSuccessUiState }
                     }
                 }
             }
@@ -79,5 +84,9 @@ class WeatherApiViewModel(
         if (::previousSuccessUiState.isInitialized) {
             _uiState.update { previousSuccessUiState }
         }
+    }
+
+    fun dismissBottomSheet() {
+        _showErrorBottomSheet.update { false }
     }
 }

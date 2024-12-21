@@ -6,5 +6,7 @@
     <string name="humidity">Humidity</string>
     <string name="uv">UV</string>
     <string name="feels_like">Feels Like</string>
+    <string name="error">Ops, something went wrong, please try again later!</string>
+    <string name="close">Close</string>
 
 </resources>
