@@ -21,14 +21,14 @@ class WeatherApiViewModel(
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<WeatherUiState<Weather?>> =
-        MutableStateFlow(WeatherUiState.Initial)
+        MutableStateFlow(WeatherUiState.Success(null))
     val uiState = _uiState
 
     private val _searchState: MutableStateFlow<SearchState<List<Search>?>> =
         MutableStateFlow(SearchState.Initial)
     val searchState = _searchState
 
-    private lateinit var previousUiState: WeatherUiState<Weather?>
+    private lateinit var previousSuccessUiState: WeatherUiState<Weather?>
 
 
     fun getWeather(city: String) {
@@ -41,6 +41,8 @@ class WeatherApiViewModel(
 
                     is ResponseStatus.Success -> {
                         _uiState.update { WeatherUiState.Success(response.data) }
+                        _searchState.update { SearchState.Initial }
+                        previousSuccessUiState = _uiState.value
                     }
 
                     is ResponseStatus.Error -> {
@@ -57,9 +59,6 @@ class WeatherApiViewModel(
                 when (response) {
                     is ResponseStatus.Loading -> {
                         _searchState.update { SearchState.Loading }
-                        if (_uiState.value !is WeatherUiState.Searching) {
-                            previousUiState = _uiState.value
-                        }
                         _uiState.update { WeatherUiState.Searching }
                     }
 
@@ -77,8 +76,8 @@ class WeatherApiViewModel(
 
     fun cleanSearchAndRestoreState() {
         _searchState.update { SearchState.Initial }
-        if (::previousUiState.isInitialized) {
-            _uiState.update { previousUiState }
+        if (::previousSuccessUiState.isInitialized) {
+            _uiState.update { previousSuccessUiState }
         }
     }
 }

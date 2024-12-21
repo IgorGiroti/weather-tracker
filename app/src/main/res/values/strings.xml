@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Weather Tracker</string>
+    <string name="no_city_title">No City Selected</string>
+    <string name="no_city_description">Please Search For A City</string>
+    <string name="search_placeholder">Search Location</string>
+    <string name="humidity">Humidity</string>
+    <string name="uv">UV</string>
+    <string name="feels_like">Feels Like</string>
+
 </resources>

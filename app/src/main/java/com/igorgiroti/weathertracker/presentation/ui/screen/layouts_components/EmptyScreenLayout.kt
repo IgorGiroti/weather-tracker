@@ -8,12 +8,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.igorgiroti.weathertracker.R
 import com.igorgiroti.weathertracker.presentation.ui.theme.NeutralGray
 
 @Composable
-fun InitialScreenLayout() {
+fun EmptyScreenLayout() {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -22,13 +24,13 @@ fun InitialScreenLayout() {
         Text(
             modifier = Modifier.padding(top = 240.dp),
             color = NeutralGray,
-            text = "No City Selected",
+            text = stringResource(R.string.no_city_title),
             style = MaterialTheme.typography.bodyLarge,
         )
         Text(
             modifier = Modifier.padding(top = 8.dp),
             color = NeutralGray,
-            text = "Please Search For A City",
+            text = stringResource(R.string.no_city_description),
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.W600
             )

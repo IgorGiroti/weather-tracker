@@ -12,13 +12,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.igorgiroti.weathertracker.domain.model.Search
 import com.igorgiroti.weathertracker.domain.model.Weather
-import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.InitialScreenLayout
+import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.EmptyScreenLayout
 import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.LoadingScreenLayout
 import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.SearchBar
 import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.SearchResultLayout
+import com.igorgiroti.weathertracker.presentation.ui.screen.layouts_components.SuccessScreenLayout
 import com.igorgiroti.weathertracker.presentation.ui.state.SearchState
 import com.igorgiroti.weathertracker.presentation.ui.state.WeatherUiState
 import com.igorgiroti.weathertracker.presentation.ui.viewModel.WeatherApiViewModel
@@ -32,11 +35,14 @@ fun WeatherTrackerScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchState by viewModel.searchState.collectAsState()
+    val focusManager = LocalFocusManager.current
     var search by remember { mutableStateOf(EMPTY) }
+    var isFocused by remember { mutableStateOf(false) }
     var lastSearch by remember { mutableStateOf(EMPTY) }
 
+
     LaunchedEffect(search) {
-        if (search.isEmpty()) {
+        if (search.isEmpty() && isFocused) {
             lastSearch = EMPTY
             viewModel.cleanSearchAndRestoreState()
         }
@@ -52,7 +58,11 @@ fun WeatherTrackerScreen(
         modifier = modifier,
         topBar = {
             SearchBar(
-                modifier = Modifier.padding(top = 44.dp),
+                modifier = Modifier
+                    .padding(top = 44.dp)
+                    .onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused
+                    },
                 search = search,
                 onSearchChange = { searchValue ->
                     search = searchValue
@@ -63,37 +73,40 @@ fun WeatherTrackerScreen(
 
         Column(modifier = Modifier.padding(padding)) {
             when (uiState) {
-                is WeatherUiState.Initial -> {
-                    InitialScreenLayout()
-                }
-
                 is WeatherUiState.Loading -> {
                     LoadingScreenLayout()
                 }
 
                 is WeatherUiState.Success -> {
-                    Text("Sucesso ${(uiState as WeatherUiState.Success<Weather?>).data?.location?.name}")
+                    val data = (uiState as WeatherUiState.Success<Weather?>).data
+
+                    data?.let {
+                        SuccessScreenLayout(weatherModel = data)
+                    } ?: EmptyScreenLayout()
+
                 }
 
                 is WeatherUiState.Error -> {
                     Text("Error")
                 }
 
-                WeatherUiState.Searching -> {
+                is WeatherUiState.Searching -> {
                     when (searchState) {
                         is SearchState.Loading -> {
                             LoadingScreenLayout()
                         }
 
                         is SearchState.Error -> {
-                            Text("Deu ruim a busca")
+                            Text("Error")
                         }
 
                         is SearchState.Success -> {
                             SearchResultLayout(
                                 searchList = (searchState as SearchState.Success<List<Search>?>).data,
                                 onClick = { city ->
-                                    viewModel.getSearch(city)
+                                    viewModel.getWeather(city)
+                                    focusManager.clearFocus()
+                                    search = EMPTY
                                 }
                             )
                         }

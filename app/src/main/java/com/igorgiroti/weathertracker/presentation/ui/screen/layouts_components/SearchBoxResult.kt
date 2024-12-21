@@ -30,13 +30,14 @@ fun SearchBoxResult(
                 color = Gainsboro,
                 shape = RoundedCornerShape(16.dp)
             )
-            .padding(horizontal = 24.dp)
             .clickable {
                 onClick(searchModel.name)
             }
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
         ) {
             Text(
                 modifier = Modifier.padding(top = 8.dp),

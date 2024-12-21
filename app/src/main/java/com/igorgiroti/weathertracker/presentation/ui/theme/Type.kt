@@ -10,8 +10,8 @@ val Typography = Typography(
     bodySmall = TextStyle(
         fontSize = 12.sp,
         fontFamily = poppinsFontFamily,
-        fontWeight = FontWeight.W400,
-        lineHeight = 22.5.sp
+        fontWeight = FontWeight.W500,
+        lineHeight = 18.sp
     ),
     bodyMedium = TextStyle(
         fontSize = 15.sp,
@@ -27,3 +27,4 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
 )
+

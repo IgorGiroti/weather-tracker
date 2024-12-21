@@ -12,18 +12,18 @@ data class WeatherApiResponse(
 
 data class LocationResponse(
     @SerializedName("name")
-    val name: String?,
+    val name: String,
 )
 
 data class CurrentWeatherResponse(
     @SerializedName("temp_f")
-    val temp: Double?,
+    val temp: Double,
     @SerializedName("humidity")
-    val humidity: Int?,
+    val humidity: Int,
     @SerializedName("feelslike_f")
-    val feelsLike: Double?,
+    val feelsLike: Double,
     @SerializedName("uv")
-    val uv: Double?,
+    val uv: Double,
     @SerializedName("condition")
     val condition: CurrentWeatherConditionResponse,
 )
@@ -32,5 +32,5 @@ data class CurrentWeatherConditionResponse(
     @SerializedName("text")
     val text: String?,
     @SerializedName("icon")
-    val iconUrl: String?,
+    val iconUrl: String,
 )

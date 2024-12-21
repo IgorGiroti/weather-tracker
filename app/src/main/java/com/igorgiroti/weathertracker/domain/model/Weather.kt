@@ -6,18 +6,18 @@ data class Weather(
 )
 
 data class Location(
-    val name: String?
+    val name: String
 )
 
 data class CurrentWeather(
-    val temp: Double?,
-    val humidity: Int?,
-    val feelsLike: Double?,
-    val uv: Double?,
+    val temp: Double,
+    val humidity: Int,
+    val feelsLike: Double,
+    val uv: Double,
     val condition: CurrentWeatherCondition,
 )
 
 data class CurrentWeatherCondition(
     val text: String?,
-    val iconUrl: String?
+    val iconUrl: String
 )
