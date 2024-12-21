@@ -1,5 +1,6 @@
 package com.igorgiroti.weathertracker.presentation.ui.viewModel
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.igorgiroti.weathertracker.domain.model.Search
@@ -9,6 +10,7 @@ import com.igorgiroti.weathertracker.domain.usecase.GetWeatherApiUseCase
 import com.igorgiroti.weathertracker.presentation.ui.state.SearchState
 import com.igorgiroti.weathertracker.presentation.ui.state.WeatherUiState
 import com.igorgiroti.weathertracker.utils.ResponseStatus
+import com.igorgiroti.weathertracker.utils.SAVED_CITY
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +19,8 @@ import kotlinx.coroutines.launch
 class WeatherApiViewModel(
     private val getWeatherUseCase: GetWeatherApiUseCase,
     private val getSearchUseCase: GetSearchUseCase,
-    private val dispatcher: CoroutineDispatcher
+    private val dispatcher: CoroutineDispatcher,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<WeatherUiState<Weather?>> =
@@ -33,6 +36,12 @@ class WeatherApiViewModel(
 
     private lateinit var previousSuccessUiState: WeatherUiState<Weather?>
 
+    init {
+        val savedCity = getSavedWeather()
+        savedCity?.let { city ->
+            getWeather(city)
+        }
+    }
 
     fun getWeather(city: String) {
         viewModelScope.launch(dispatcher) {
@@ -45,6 +54,7 @@ class WeatherApiViewModel(
                     is ResponseStatus.Success -> {
                         _uiState.update { WeatherUiState.Loaded(response.data) }
                         _searchState.update { SearchState.Initial }
+                        saveCity(city)
                         previousSuccessUiState = _uiState.value
                     }
 
@@ -88,5 +98,15 @@ class WeatherApiViewModel(
 
     fun dismissBottomSheet() {
         _showErrorBottomSheet.update { false }
+    }
+
+
+    private fun saveCity(city: String) {
+        sharedPreferences.edit().putString(SAVED_CITY, city).apply()
+    }
+
+
+    private fun getSavedWeather(): String? {
+        return sharedPreferences.getString(SAVED_CITY, null)
     }
 }
