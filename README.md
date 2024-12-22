@@ -6,6 +6,8 @@
 
 -> MVVM with Clean Architecture: Modular, scalable, and maintainable code structure.
 
+-> SharedPreferences: Local storage for saving user preferences and settings.
+
 This Android project requires an **API Key** to function correctly. To ensure the application can access the necessary services (Weather API), you must add your **API Key** to the `local.properties` configuration file.
 
 ## ⚙️ **Setup Instructions**
